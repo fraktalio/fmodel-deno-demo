@@ -24,8 +24,7 @@ TypeScript library.
   - less error-prone,
   - easier to understand,
   - easier to test,
-  - type-safe and
-  - thread-safe.
+  - and type-safe.
 - enabling illustrating requirements using examples
   - the requirements are presented as scenarios.
   - a scenario is an example of the system’s behavior from the users’
@@ -42,6 +41,13 @@ TypeScript library.
 - [https://docs.deno.com/deploy/kv/manual/](https://docs.deno.com/deploy/kv/manual/)
 
 ## Run the tests
+
+We are using the `Given`-`When`-`Then` [structure](test_specification.ts) to
+create a [testable specification](main_test.ts):
+
+- Given < some precondition(s) >
+- When < an action/trigger occurs >
+- Then < some post condition >
 
 ```shell
 deno test
