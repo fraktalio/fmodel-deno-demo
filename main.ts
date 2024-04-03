@@ -10,7 +10,7 @@ import {
 import { Decider, EventSourcingAggregate } from "fmodel";
 import { CommandMetadata, DenoEventRepository } from "./infrastructure.ts";
 import { ApplicationAggregate } from "./application.ts";
-import { commandAndMetadataSchema } from "./api-schema.ts";
+import { commandAndMetadataSchema } from "./schema.ts";
 
 if (import.meta.main) {
   // Example of a command / a JSON string / it can be fetched from the HTTP request body
