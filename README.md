@@ -43,7 +43,7 @@ TypeScript library.
 ## Run the tests
 
 We are using the `Given`-`When`-`Then` [structure](test_specification.ts) to
-create a [testable specification](main_test.ts):
+create a [testable specification](domain_test.ts):
 
 - Given < some precondition(s) >
 - When < an action/trigger occurs >
@@ -53,10 +53,14 @@ create a [testable specification](main_test.ts):
 deno test
 ```
 
-## Run the application
+## Run the application (HTTP Server & Client)
 
 ```shell
-deno run -A --unstable-kv main.ts
+deno run --unstable-kv --allow-net server.ts
+```
+
+```shell
+deno run --allow-net client.ts
 ```
 
 ## Deno KV as an event store
