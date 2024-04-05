@@ -1,6 +1,4 @@
-
 // This is a simple client that sends a create restaurant command and a change restaurant menu command to the server
-
 
 // Create a restaurant command JSON
 const createRestaurantCommandJson = `
@@ -62,6 +60,5 @@ const changeRestaurantMenuCommandResult = await fetch("http://localhost:8000", {
 });
 
 console.log(changeRestaurantMenuCommandResult);
-
 
 // Run the client : `deno run --allow-net client.ts`
