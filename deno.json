@@ -5,7 +5,7 @@
   "imports": {
     "std/": "https://deno.land/std@0.221.0/",
     "ulid": "https://deno.land/x/ulid@v0.3.0/mod.ts",
-    "fmodel": "npm:@fraktalio/fmodel-ts@2.0.0",
+    "fmodel": "npm:@fraktalio/fmodel-ts@2.1.1",
     "zod": "https://deno.land/x/zod@v3.16.1/mod.ts"
   }
 }

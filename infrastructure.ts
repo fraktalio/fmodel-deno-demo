@@ -64,9 +64,10 @@ export class DenoEventRepository implements
     return events;
   }
 
-  // Save the events to the decider stream
+  // Save the events
   // key schema: ["streamVersion", "streamId"]
   // key schema: ["events", "streamId", "eventId"]
+  // key schema: ["events", "eventId"]
   async save(
     eList: readonly (Event)[],
     commandMetadata: CommandMetadata,
@@ -80,8 +81,9 @@ export class DenoEventRepository implements
     const atomicOperation = this.kv.atomic();
     for (const e of eList) {
       const eventId = ulid();
-      const eventKey = ["events", e.id, eventId];
+      const streamEventKey = ["events", e.id, eventId];
       const streamVersionKey = ["streamVersion", e.id];
+      const eventKey = ["events", eventId];
       const newEvent: Event & EventMetadata = {
         ...e,
         eventId: eventId,
@@ -95,11 +97,12 @@ export class DenoEventRepository implements
           key: streamVersionKey,
           versionstamp: versionstamp,
         }) // Ensure the version of decider stream hasn't changed / optimistic locking
-        .set(eventKey, newEvent) // Append the event to the stream
+        .set(streamEventKey, newEvent) // Append the event to the concrete stream
+        .set(eventKey, newEvent) // Append the event to the one big stream of all events / global stream
         .set(streamVersionKey, eventId); // Update the stream version, with the latest event ID
 
       // Add the event key to the list of keys that are stored
-      keys.push(eventKey);
+      keys.push(streamEventKey);
     }
     // Commit the transaction
     if (!(await atomicOperation.commit()).ok) {
@@ -123,7 +126,7 @@ export class DenoEventRepository implements
       }
       result.push({ ...e.value, versionstamp: version.versionstamp });
     }
-    // Return the event with the metadata
+    // Return the events with the metadata
     return result;
   }
 }

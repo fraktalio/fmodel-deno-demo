@@ -4,7 +4,7 @@
     "specifiers": {
       "jsr:@std/assert": "jsr:@std/assert@0.221.0",
       "jsr:@std/fmt@^0.221.0": "jsr:@std/fmt@0.221.0",
-      "npm:@fraktalio/fmodel-ts@2.0.0": "npm:@fraktalio/fmodel-ts@2.0.0"
+      "npm:@fraktalio/fmodel-ts@2.1.1": "npm:@fraktalio/fmodel-ts@2.1.1"
     },
     "jsr": {
       "@std/assert@0.221.0": {
@@ -18,8 +18,8 @@
       }
     },
     "npm": {
-      "@fraktalio/fmodel-ts@2.0.0": {
-        "integrity": "sha512-rxf9p0O2AmI2C1vNP8B6YXyp0c3ctWJOhhkqth+48XvwKOhC/04ns0UzkuRaDz6rw7+csB53QpPXK8N0uWkByQ==",
+      "@fraktalio/fmodel-ts@2.1.1": {
+        "integrity": "sha512-SISqyvrVlVK8Znu81WrtbfirRqNIKKiYZvp4nQmzzntGtGCYzP5WbMTKqXlHb6S/PQPnVuBbEkZVznObqievPQ==",
         "dependencies": {}
       }
     }
@@ -74,7 +74,7 @@
   },
   "workspace": {
     "dependencies": [
-      "npm:@fraktalio/fmodel-ts@2.0.0"
+      "npm:@fraktalio/fmodel-ts@2.1.1"
     ]
   }
 }
