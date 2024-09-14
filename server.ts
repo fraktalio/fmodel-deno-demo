@@ -1,16 +1,15 @@
 import { blue } from "std/fmt/colors.ts";
 import {
-  Command,
-  Event,
   Order,
   orderDecider,
   Restaurant,
   restaurantDecider,
-} from "./domain.ts";
+} from "./lib/domain.ts";
 import { Decider, EventSourcingAggregate } from "fmodel";
-import { CommandMetadata, DenoEventRepository } from "./infrastructure.ts";
-import { ApplicationAggregate } from "./application.ts";
-import { commandAndMetadataSchema } from "./schema.ts";
+import { CommandMetadata, DenoEventRepository } from "./lib/infrastructure.ts";
+import { ApplicationAggregate } from "./lib/application.ts";
+import { commandAndMetadataSchema } from "./lib/api_schema.ts";
+import { Command, Event } from "./lib/api.ts";
 
 // A simple HTTP server that handles commands of all types
 Deno.serve(async (request: Request) => {

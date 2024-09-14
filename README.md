@@ -1,6 +1,9 @@
 # fmodel-deno-demo
 
+> TECHNOLOGY: Fmodel, TypeScript, Deno, Deno KV, Deno Deploy
+
 A demo/example project for the imaginary restaurant and order management.
+
 
 It demonstrates how to run our unique domain and orchestrate it in an
 EventSourced/EventDriven way.
@@ -43,7 +46,7 @@ TypeScript library.
 ## Run the tests
 
 We are using the `Given`-`When`-`Then` [structure](test_specification.ts) to
-create a [testable specification](domain_test.ts):
+create a [testable specification](lib/domain_test.ts):
 
 - Given < some precondition(s) >
 - When < an action/trigger occurs >
@@ -53,11 +56,15 @@ create a [testable specification](domain_test.ts):
 deno test
 ```
 
-## Run the application (HTTP Server & Client)
+## Run the application (HTTP Server)
 
 ```shell
 deno run --unstable-kv --allow-net server.ts
 ```
+
+## Run the client
+
+> This is a simple client that sends a create restaurant command and a change restaurant menu command to the server.
 
 ```shell
 deno run --allow-net client.ts

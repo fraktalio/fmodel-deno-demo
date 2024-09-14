@@ -1,146 +1,17 @@
 // deno-lint-ignore-file no-case-declarations
 import { Decider, View } from "fmodel";
-
-// Be precise and explicit about the types
-export type SchemaVersion = number;
-export type RestaurantId = string;
-export type OrderId = string;
-export type MenuItemId = string;
-export type RestaurantName = string;
-export type RestaurantMenuId = string;
-export type MenuItemName = string;
-export type MenuItemPrice = string;
-export type Reason =
-  | "Restaurant already exist!"
-  | "Restaurant does not exist!"
-  | "Order already exist!"
-  | "Order does not exist!";
-
-export type RestaurantMenuCuisine =
-  | "GENERAL"
-  | "SERBIAN"
-  | "ITALIAN"
-  | "MEXICAN"
-  | "CHINESE"
-  | "INDIAN"
-  | "FRENCH";
-
-export type MenuItem = {
-  readonly menuItemId: MenuItemId;
-  readonly name: MenuItemName;
-  readonly price: MenuItemPrice;
-};
-
-export type RestaurantMenu = {
-  readonly menuItems: MenuItem[];
-  readonly menuId: RestaurantMenuId;
-  readonly cuisine: RestaurantMenuCuisine;
-};
-
-// ###########################################################################
-// ########################### Restaurant ####################################
-// ###########################################################################
-
-// ########################## API (COMMANDS) #################################
-
-export type RestaurantCommand =
-  | CreateRestaurantCommand
-  | ChangeRestaurantMenuCommand
-  | PlaceOrderCommand;
-
-export type CreateRestaurantCommand = {
-  readonly decider: "Restaurant";
-  readonly kind: "CreateRestaurantCommand";
-  readonly id: RestaurantId;
-  readonly name: RestaurantName;
-  readonly menu: RestaurantMenu;
-};
-
-export type ChangeRestaurantMenuCommand = {
-  readonly decider: "Restaurant";
-  readonly kind: "ChangeRestaurantMenuCommand";
-  readonly id: RestaurantId;
-  readonly menu: RestaurantMenu;
-};
-
-export type PlaceOrderCommand = {
-  readonly decider: "Restaurant";
-  readonly kind: "PlaceOrderCommand";
-  readonly id: RestaurantId;
-  readonly orderId: OrderId;
-  readonly menuItems: MenuItem[];
-};
-
-// ########################### API (EVENTS) ##################################
-
-export type RestaurantEvent =
-  | RestaurantCreatedEvent
-  | RestaurantNotCreatedEvent
-  | RestaurantMenuChangedEvent
-  | RestaurantMenuNotChangedEvent
-  | RestaurantOrderPlacedEvent
-  | RestaurantOrderNotPlacedEvent;
-
-export type RestaurantCreatedEvent = {
-  readonly version: SchemaVersion;
-  readonly decider: "Restaurant";
-  readonly kind: "RestaurantCreatedEvent";
-  readonly id: RestaurantId;
-  readonly name: RestaurantName;
-  readonly menu: RestaurantMenu;
-  readonly final: boolean;
-};
-
-export type RestaurantNotCreatedEvent = {
-  readonly version: SchemaVersion;
-  readonly decider: "Restaurant";
-  readonly kind: "RestaurantNotCreatedEvent";
-  readonly id: RestaurantId;
-  readonly name: RestaurantName;
-  readonly menu: RestaurantMenu;
-  readonly reason: Reason;
-  readonly final: boolean;
-};
-
-export type RestaurantMenuChangedEvent = {
-  readonly version: SchemaVersion;
-  readonly decider: "Restaurant";
-  readonly kind: "RestaurantMenuChangedEvent";
-  readonly id: RestaurantId;
-  readonly menu: RestaurantMenu;
-  readonly final: boolean;
-};
-
-export type RestaurantMenuNotChangedEvent = {
-  readonly version: SchemaVersion;
-  readonly decider: "Restaurant";
-  readonly kind: "RestaurantMenuNotChangedEvent";
-  readonly id: RestaurantId;
-  readonly menu: RestaurantMenu;
-  readonly reason: Reason;
-  readonly final: boolean;
-};
-
-export type RestaurantOrderPlacedEvent = {
-  readonly version: SchemaVersion;
-  readonly decider: "Restaurant";
-  readonly kind: "RestaurantOrderPlacedEvent";
-  readonly id: RestaurantId;
-  readonly orderId: OrderId;
-  readonly menuItems: MenuItem[];
-  readonly final: boolean;
-};
-
-export type RestaurantOrderNotPlacedEvent = {
-  readonly version: SchemaVersion;
-  readonly decider: "Restaurant";
-  readonly kind: "RestaurantOrderNotPlacedEvent";
-  readonly id: RestaurantId;
-  readonly orderId: OrderId;
-  readonly menuItems: MenuItem[];
-  readonly reason: Reason;
-  readonly final: boolean;
-};
+import {
+  MenuItem,
+  OrderCommand,
+  OrderEvent,
+  OrderId,
+  OrderStatus,
+  RestaurantCommand,
+  RestaurantEvent,
+  RestaurantId,
+  RestaurantMenu,
+  RestaurantName,
+} from "./api.ts";
 
 /**
  * Restaurant state / a data type that represents the current state of the Restaurant
@@ -335,74 +206,6 @@ export const restaurantView: View<RestaurantView | null, RestaurantEvent> =
     null,
   );
 
-// ###########################################################################
-// ############################## Order ######################################
-// ###########################################################################
-
-// ########################## API (COMMANDS) #################################
-
-export type OrderCommand = CreateOrderCommand | MarkOrderAsPreparedCommand;
-
-export type CreateOrderCommand = {
-  decider: "Order";
-  kind: "CreateOrderCommand";
-  id: OrderId;
-  restaurantId: RestaurantId;
-  menuItems: MenuItem[];
-};
-
-export type MarkOrderAsPreparedCommand = {
-  decider: "Order";
-  kind: "MarkOrderAsPreparedCommand";
-  id: OrderId;
-};
-
-// ########################### API (EVENTS) ##################################
-
-export type OrderEvent =
-  | OrderCreatedEvent
-  | OrderNotCreatedEvent
-  | OrderPreparedEvent
-  | OrderNotPreparedEvent;
-
-export type OrderCreatedEvent = {
-  version: SchemaVersion;
-  decider: "Order";
-  kind: "OrderCreatedEvent";
-  id: OrderId;
-  restaurantId: RestaurantId;
-  menuItems: MenuItem[];
-  final: boolean;
-};
-
-export type OrderNotCreatedEvent = {
-  version: SchemaVersion;
-  decider: "Order";
-  kind: "OrderNotCreatedEvent";
-  id: OrderId;
-  restaurantId: RestaurantId;
-  reason: Reason;
-  menuItems: MenuItem[];
-  final: boolean;
-};
-
-export type OrderPreparedEvent = {
-  version: SchemaVersion;
-  decider: "Order";
-  kind: "OrderPreparedEvent";
-  id: OrderId;
-  final: boolean;
-};
-
-export type OrderNotPreparedEvent = {
-  version: SchemaVersion;
-  decider: "Order";
-  kind: "OrderNotPreparedEvent";
-  id: OrderId;
-  reason: Reason;
-  final: boolean;
-};
-
 /**
  * Order state / a data type that represents the current state of the Order
  */
@@ -412,8 +215,6 @@ export type Order = {
   readonly menuItems: MenuItem[];
   readonly status: OrderStatus;
 };
-
-export type OrderStatus = "NOT_CREATED" | "CREATED" | "PREPARED";
 
 // ################### Order Decider / Command Handler ########################
 
@@ -572,6 +373,3 @@ export const orderView: View<OrderView | null, OrderEvent> = new View<
   },
   null,
 );
-
-export type Command = RestaurantCommand | OrderCommand;
-export type Event = RestaurantEvent | OrderEvent;

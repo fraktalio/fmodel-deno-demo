@@ -1,12 +1,11 @@
+import { restaurantDecider, restaurantView } from "./domain.ts";
 import {
-  RestaurantCommand,
-  restaurantDecider,
-  RestaurantEvent,
-  restaurantView,
-} from "./domain.ts";
-import { restaurantCommandSchema, restaurantEventSchema } from "./schema.ts";
-import { ViewSpecification } from "./test_specification.ts";
-import { DeciderSpecification } from "./test_specification.ts";
+  restaurantCommandSchema,
+  restaurantEventSchema,
+} from "./api_schema.ts";
+import { ViewSpecification } from "../test_specification.ts";
+import { DeciderSpecification } from "../test_specification.ts";
+import { RestaurantCommand, RestaurantEvent } from "./api.ts";
 
 // A convinient testing specififcation for the Decider - GIVEN / WHEN / THEN
 

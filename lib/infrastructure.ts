@@ -7,7 +7,7 @@
  */
 
 import { IEventRepository } from "fmodel";
-import { Command, Event } from "./domain.ts";
+import { Command, Event } from "./api.ts";
 import { monotonicFactory } from "ulid";
 
 // Be precise and explicit about the types
