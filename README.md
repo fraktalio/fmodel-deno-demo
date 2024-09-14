@@ -4,7 +4,6 @@
 
 A demo/example project for the imaginary restaurant and order management.
 
-
 It demonstrates how to run our unique domain and orchestrate it in an
 EventSourced/EventDriven way.
 
@@ -64,7 +63,8 @@ deno run --unstable-kv --allow-net server.ts
 
 ## Run the client
 
-> This is a simple client that sends a create restaurant command and a change restaurant menu command to the server.
+> This is a simple client that sends a create restaurant command and a change
+> restaurant menu command to the server.
 
 ```shell
 deno run --allow-net client.ts
