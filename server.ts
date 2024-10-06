@@ -25,7 +25,7 @@ Deno.serve(async (request: Request) => {
     console.log(blue("Handling command: "), command);
 
     // Open the key-value store
-    const kv = await Deno.openKv();
+    const kv = await Deno.openKv("./db.sqlite3");
     // Combine deciders to create a new decider that can handle both restaurant and order commands
     const decider: Decider<Command, (Order & Restaurant) | null, Event> =
       restaurantDecider.combine(orderDecider);
@@ -51,4 +51,4 @@ Deno.serve(async (request: Request) => {
     });
   }
 });
-// Run the application server : `deno run --unstable-kv --allow-net server.ts`
+// Run the application server : `deno run --unstable-kv --allow-net --allow-read --allow-write server.ts`

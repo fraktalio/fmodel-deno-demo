@@ -58,7 +58,7 @@ deno test
 ## Run the application (HTTP Server)
 
 ```shell
-deno run --unstable-kv --allow-net server.ts
+deno run --unstable-kv --allow-net --allow-read --allow-write server.ts
 ```
 
 ## Run the client
