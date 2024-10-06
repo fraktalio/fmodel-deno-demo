@@ -1,5 +1,5 @@
 import { assert, assertEquals } from "std/assert/mod.ts";
-import { IDecider, IView } from "fmodel";
+import type { IDecider, IView } from "fmodel";
 
 export type DeciderSpecification<C, E> = {
   given: (events: E[]) => {
@@ -44,6 +44,7 @@ export const DeciderSpecification = {
             };
 
             return {
+              // biome-ignore lint/suspicious/noThenProperty: <explanation>
               then: (expectedEvents: E[]) => {
                 const resultEvents = handle();
                 assertEquals(resultEvents, expectedEvents);
@@ -99,6 +100,7 @@ export const ViewSpecification = {
           );
         };
         return {
+          // biome-ignore lint/suspicious/noThenProperty: <explanation>
           then: (expectedState: S) => {
             const resultState = handle();
             assertEquals(resultState, expectedState);

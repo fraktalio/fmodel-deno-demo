@@ -6,8 +6,8 @@
  * These classes are used in the infrastructure layer of the application.
  */
 
-import { IEventRepository } from "fmodel";
-import { Command, Event } from "./api.ts";
+import type { IEventRepository } from "fmodel";
+import type { Command, Event } from "./api.ts";
 import { monotonicFactory } from "ulid";
 
 // Be precise and explicit about the types

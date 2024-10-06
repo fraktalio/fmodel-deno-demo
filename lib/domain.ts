@@ -1,6 +1,5 @@
-// deno-lint-ignore-file no-case-declarations
 import { Decider, View } from "fmodel";
-import {
+import type {
   MenuItem,
   OrderCommand,
   OrderEvent,
@@ -119,10 +118,11 @@ export const restaurantDecider: Decider<
               final: false,
             },
           ];
-      default:
+      default: {
         // Exhaustive matching of the command type
         const _: never = command;
         return [];
+      }
     }
   },
   (currentState, event) => {
@@ -145,10 +145,11 @@ export const restaurantDecider: Decider<
         return currentState;
       case "RestaurantOrderNotPlacedEvent":
         return currentState;
-      default:
+      default: {
         // Exhaustive matching of the event type
         const _: never = event;
         return currentState;
+      }
     }
   },
   null,
@@ -197,10 +198,11 @@ export const restaurantView: View<RestaurantView | null, RestaurantEvent> =
           return currentState;
         case "RestaurantOrderNotPlacedEvent":
           return currentState;
-        default:
+        default: {
           // Exhaustive matching of the event type
           const _: never = event;
           return currentState;
+        }
       }
     },
     null,
@@ -280,10 +282,11 @@ export const orderDecider: Decider<OrderCommand, Order | null, OrderEvent> =
                 final: false,
               },
             ];
-        default:
+        default: {
           // Exhaustive matching of the command type
           const _: never = command;
           return [];
+        }
       }
     },
     (currentState, event) => {
@@ -308,10 +311,11 @@ export const orderDecider: Decider<OrderCommand, Order | null, OrderEvent> =
             : currentState;
         case "OrderNotPreparedEvent":
           return currentState;
-        default:
+        default: {
           // Exhaustive matching of the event type
           const _: never = event;
           return currentState;
+        }
       }
     },
     null,
@@ -365,10 +369,11 @@ export const orderView: View<OrderView | null, OrderEvent> = new View<
           : currentState;
       case "OrderNotPreparedEvent":
         return currentState;
-      default:
+      default: {
         // Exhaustive matching of the event type
         const _: never = event;
         return currentState;
+      }
     }
   },
   null,

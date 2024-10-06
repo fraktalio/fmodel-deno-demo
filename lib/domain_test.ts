@@ -5,7 +5,7 @@ import {
 } from "./api_schema.ts";
 import { ViewSpecification } from "../test_specification.ts";
 import { DeciderSpecification } from "../test_specification.ts";
-import { RestaurantCommand, RestaurantEvent } from "./api.ts";
+import type { RestaurantCommand, RestaurantEvent } from "./api.ts";
 
 // A convinient testing specififcation for the Decider - GIVEN / WHEN / THEN
 

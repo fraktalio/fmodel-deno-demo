@@ -1,10 +1,10 @@
-import { EventSourcingAggregate, MaterializedView } from "fmodel";
-import { Order, Restaurant, RestaurantView } from "./domain.ts";
-import { StreamVersion } from "./infrastructure.ts";
-import { CommandMetadata } from "./infrastructure.ts";
-import { EventMetadata } from "./infrastructure.ts";
-import { OrderView } from "./domain.ts";
-import { Command, Event } from "./api.ts";
+import type { EventSourcingAggregate, MaterializedView } from "fmodel";
+import type { Order, Restaurant, RestaurantView } from "./domain.ts";
+import type { StreamVersion } from "./infrastructure.ts";
+import type { CommandMetadata } from "./infrastructure.ts";
+import type { EventMetadata } from "./infrastructure.ts";
+import type { OrderView } from "./domain.ts";
+import type { Command, Event } from "./api.ts";
 
 /**
  * An aggregate that handles the command and produces new events / A convenient type alias for the Fmodel's `EventSourcingLockingAggregate`
