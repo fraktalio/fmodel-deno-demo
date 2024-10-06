@@ -10,6 +10,10 @@ import type { IEventRepository } from "fmodel";
 import type { Command, Event } from "./api.ts";
 import { monotonicFactory } from "ulid";
 
+export const LAST_STREAM_EVENT_KEY_PREFIX = "lastStreamEvent";
+export const EVENTS_KEY_PREFIX = "events";
+export const EVENTS_BY_STREAM_ID_KEY_PREFIX = "eventsByStreamId";
+
 // Be precise and explicit about the types
 export type StreamVersion = {
   versionstamp: string;
@@ -40,11 +44,13 @@ export class DenoEventRepository implements
   }
 
   // Fetch the version of the decider stream
-  // key schema: ["streamVersion", "streamId"]
+  // key schema: ["lastStreamEvent", "streamId"]
   async versionProvider(event: Event): Promise<StreamVersion | null> {
-    const streamVersionKey = ["streamVersion", event.id];
-    const version = await this.kv.get(streamVersionKey);
-    return version.versionstamp ? { versionstamp: version.versionstamp } : null;
+    const lastStreamEventKey = [LAST_STREAM_EVENT_KEY_PREFIX, event.id];
+    const lastStreamEvent = await this.kv.get(lastStreamEventKey);
+    return lastStreamEvent.versionstamp
+      ? { versionstamp: lastStreamEvent.versionstamp }
+      : null;
   }
 
   // Fetch the events from the decider stream
@@ -52,21 +58,23 @@ export class DenoEventRepository implements
   async fetch(
     c: Command,
   ): Promise<readonly (Event & StreamVersion & EventMetadata)[]> {
-    const streamKeyPrefix = ["events", c.id];
-    const eventList = this.kv.list<Event & StreamVersion & EventMetadata>({
-      prefix: streamKeyPrefix,
+    const eventsByStreamIdPrefix = [EVENTS_BY_STREAM_ID_KEY_PREFIX, c.id];
+    const eventsByStreamId = this.kv.list<
+      Event & StreamVersion & EventMetadata
+    >({
+      prefix: eventsByStreamIdPrefix,
     });
 
-    const events = [];
-    for await (const event of eventList) {
-      events.push(event.value);
+    const result = [];
+    for await (const event of eventsByStreamId) {
+      result.push(event.value);
     }
-    return events;
+    return result;
   }
 
   // Save the events
-  // key schema: ["streamVersion", "streamId"]
-  // key schema: ["events", "streamId", "eventId"]
+  // key schema: ["lastStreamEvent", "streamId"]
+  // key schema: ["eventsByStreamId", "streamId", "eventId"]
   // key schema: ["events", "eventId"]
   async save(
     eList: readonly (Event)[],
@@ -81,9 +89,13 @@ export class DenoEventRepository implements
     const atomicOperation = this.kv.atomic();
     for (const e of eList) {
       const eventId = ulid();
-      const streamEventKey = ["events", e.id, eventId];
-      const streamVersionKey = ["streamVersion", e.id];
-      const eventKey = ["events", eventId];
+      const eventsByStreamIdKey = [
+        EVENTS_BY_STREAM_ID_KEY_PREFIX,
+        e.id,
+        eventId,
+      ];
+      const lastStreamEventKey = [LAST_STREAM_EVENT_KEY_PREFIX, e.id];
+      const eventsKey = [EVENTS_KEY_PREFIX, eventId];
       const newEvent: Event & EventMetadata = {
         ...e,
         eventId: eventId,
@@ -94,15 +106,15 @@ export class DenoEventRepository implements
 
       atomicOperation
         .check({
-          key: streamVersionKey,
+          key: lastStreamEventKey,
           versionstamp: versionstamp,
         }) // Ensure the version of decider stream hasn't changed / optimistic locking
-        .set(streamEventKey, newEvent) // Append the event to the concrete stream
-        .set(eventKey, newEvent) // Append the event to the one big stream of all events / global stream
-        .set(streamVersionKey, eventId); // Update the stream version, with the latest event ID
+        .set(eventsByStreamIdKey, newEvent) // Append the event to the concrete stream
+        .set(eventsKey, newEvent) // Append the event to the one big stream of all events / global stream
+        .set(lastStreamEventKey, newEvent); // Update the last event in the decider/aggregate stream. This is used for optimistic locking
 
       // Add the event key to the list of keys that are stored
-      keys.push(streamEventKey);
+      keys.push(eventsByStreamIdKey);
     }
     // Commit the transaction
     if (!(await atomicOperation.commit()).ok) {

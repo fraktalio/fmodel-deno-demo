@@ -86,7 +86,7 @@ FoundationDB? iCloud, Snowflake, and more.
 ### Modeling event sourcing
 
 To model event sourcing in Deno KV properlly, we are going to use a very simple
-Key schema `events.<streamId>.<eventId>` for our Events.
+Key schema `eventsByStreamId.<streamId>.<eventId>` for our Events.
 
 - In this approach, each event is uniquely identified by a combination of a
   stream ID and an event ID. The stream ID represents the stream or
@@ -111,16 +111,15 @@ of a value for a given key, to manage concurrent access to shared resources
 without using locks. When a read operation occurs, the system returns a
 versionstamp for the associated key in addition to the value.
 
-When introducing a new key schema like `streamVersion.<streamId>`, you can
+When introducing a new key schema like `lastStreamEvent.<streamId>`, you can
 leverage it to implement optimistic locking by tracking the version of each
 stream. Here's how you can do it:
 
 1. Incrementing Stream Version:
 
 - Each time an event is appended to a stream, the version of that stream is
-  incremented. This version represents `the number of events` that have been
-  appended to the stream / or the last `eventId` that have been appended to the
-  stream. Whatever you prefer.
+  incremented. This version represents `the last event` that have been
+  appended to the stream.
 - When appending a new event to a stream, you include the current version of the
   stream in the event's metadata.
 
@@ -139,7 +138,7 @@ stream. Here's how you can do it:
 ### Modeling event streaming
 
 When appending events to the event store, in addition to appending them to their
-respective streams (`events.<streamId>.<eventId>`), you can also append them to
+respective streams (`eventsByStreamId.<streamId>.<eventId>`), you can also append them to
 the `global stream`. The Key schema for the global stream might look like this:
 `events.<eventId>`. To read all events ordered by event ID, you simply query the
 global stream. As all events are appended to this stream, you get a
