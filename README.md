@@ -118,8 +118,8 @@ stream. Here's how you can do it:
 1. Incrementing Stream Version:
 
 - Each time an event is appended to a stream, the version of that stream is
-  incremented. This version represents `the last event` that have been
-  appended to the stream.
+  incremented. This version represents `the last event` that have been appended
+  to the stream.
 - When appending a new event to a stream, you include the current version of the
   stream in the event's metadata.
 
@@ -138,11 +138,11 @@ stream. Here's how you can do it:
 ### Modeling event streaming
 
 When appending events to the event store, in addition to appending them to their
-respective streams (`eventsByStreamId.<streamId>.<eventId>`), you can also append them to
-the `global stream`. The Key schema for the global stream might look like this:
-`events.<eventId>`. To read all events ordered by event ID, you simply query the
-global stream. As all events are appended to this stream, you get a
-comprehensive view of all events in the system.
+respective streams (`eventsByStreamId.<streamId>.<eventId>`), you can also
+append them to the `global stream`. The Key schema for the global stream might
+look like this: `events.<eventId>`. To read all events ordered by event ID, you
+simply query the global stream. As all events are appended to this stream, you
+get a comprehensive view of all events in the system.
 
 1. Advantages:
 
