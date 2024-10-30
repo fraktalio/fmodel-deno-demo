@@ -305,10 +305,10 @@ export const commandMetadataSchema = z.object({
 });
 // Event metadata
 export const eventMetadataSchema = z.object({
-  tenant: z.string(),
+  // tenant: z.string(),
   eventId: z.string(),
   commandId: z.string(),
-  offset: z.number(),
+  // offset: z.number(),
 });
 // Query metadata
 export const queryMetadataSchema = z.object({
