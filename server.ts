@@ -24,8 +24,8 @@ import {
 } from "./lib/api_schema.ts";
 import type { Command, Event } from "./lib/api.ts";
 
-// Open the key-value store: running in-memory
-const kv = await Deno.openKv(":memory:");
+// Open the key-value store
+const kv = await Deno.openKv("./db.sqlite3");
 
 // Listen to events from kv queue and apply them to the materialized view
 // retry policy can specified on kv.enqueue method (optionally enabled in the DenoEventRepository)
