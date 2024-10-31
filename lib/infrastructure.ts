@@ -6,9 +6,10 @@
  * These classes are used in the infrastructure layer of the application.
  */
 
-import type { IEventRepository } from "fmodel";
+import type { IEventRepository, IViewStateRepository } from "fmodel";
 import type { Command, Event } from "./api.ts";
 import { monotonicFactory } from "ulid";
+import type { OrderView, RestaurantView } from "./domain.ts";
 
 export const LAST_STREAM_EVENT_KEY_PREFIX = "lastStreamEvent";
 export const EVENTS_KEY_PREFIX = "events";
@@ -40,6 +41,7 @@ export class DenoEventRepository implements
   > {
   constructor(
     private readonly kv: Deno.Kv,
+    private readonly enqueueEvents: boolean = false,
   ) {
   }
 
@@ -115,6 +117,9 @@ export class DenoEventRepository implements
 
       // Add the event key to the list of keys that are stored
       keys.push(eventsByStreamIdKey);
+
+      // If the enqueueEvents flag is set, enqueue the event
+      this.enqueueEvents && atomicOperation.enqueue(newEvent);
     }
     // Commit the transaction
     if (!(await atomicOperation.commit()).ok) {
@@ -140,5 +145,58 @@ export class DenoEventRepository implements
     }
     // Return the events with the metadata
     return result;
+  }
+}
+
+export const VIEW_KEY_PREFIX = "view";
+
+export type ViewState = (RestaurantView & OrderView) | null;
+export class DenoViewStateRepository implements
+  IViewStateRepository<
+    Event,
+    ViewState,
+    StreamVersion,
+    EventMetadata
+  > {
+  constructor(private readonly kv: Deno.Kv) {}
+
+  // Save the state
+  // key schema: ["view", "streamId"]
+  async save(
+    state: ViewState,
+    em: EventMetadata,
+    version: StreamVersion | null,
+  ): Promise<(RestaurantView & OrderView & StreamVersion)> {
+    if (!state) throw new Error("State is missing");
+    const streamIdFromEvent = (em as unknown as Event).id;
+    if (!streamIdFromEvent) {
+      throw new Error(
+        "Failed to extract streamId from event metadata, assuming EM is E", // can be assumed from how repo mat view handle is used
+      );
+    }
+    const key = [VIEW_KEY_PREFIX, streamIdFromEvent];
+    // const key = [VIEW_KEY_PREFIX, state.orderId ?? state.restaurantId]; // better way to do this?
+    const atomicOperation = this.kv.atomic();
+    if (version) {
+      atomicOperation.check({
+        key: key,
+        versionstamp: version.versionstamp,
+      });
+    }
+    atomicOperation.set(key, state);
+    const res = await atomicOperation.commit();
+    if (!res.ok) {
+      throw new Error("Failed to save state");
+    }
+    return { ...state, versionstamp: res.versionstamp };
+  }
+
+  async fetch(
+    event: Event & EventMetadata,
+  ): Promise<(ViewState & StreamVersion) | null> {
+    const { value, versionstamp } = await this.kv.get<
+      ViewState & StreamVersion
+    >([VIEW_KEY_PREFIX, event.id]);
+    return value ? { ...value, versionstamp } : null;
   }
 }
