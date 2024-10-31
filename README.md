@@ -144,6 +144,9 @@ look like this: `events.<eventId>`. To read all events ordered by event ID, you
 simply query the global stream. As all events are appended to this stream, you
 get a comprehensive view of all events in the system.
 
+Events are enqueued into the Deno KV queue to ensure reliable delivery to
+interested query-side components, like Materialized Views.
+
 1. Advantages:
 
 - Simplified Querying: You can query events across all streams in a single
@@ -157,7 +160,7 @@ get a comprehensive view of all events in the system.
   space to store redundant copies of events.
 - Consistency: Ensuring consistency between individual streams and the global
   stream may require additional synchronization mechanisms to prevent data
-  inconsistencies.
+  inconsistencies (Deno suports this in a nice way with atomic transactions).
 
 ---
 

@@ -30,6 +30,8 @@ export type EventMetadata = {
 
 /**
  * Store and fetch the events - used by the aggregate / command handler
+ * Event store is very general and can be used for any event-sourced aggregate
+ * Command side of the CQRS pattern
  */
 export class DenoEventRepository implements
   IEventRepository<
@@ -151,6 +153,11 @@ export class DenoEventRepository implements
 export const VIEW_KEY_PREFIX = "view";
 
 export type ViewState = (RestaurantView & OrderView) | null;
+
+// Store and fetch the view state - used by the view model
+// View store / state repository is never general, it is always specific to the view model
+// You can have multiple view models and multiple view state repositories if you want.
+// Query side of the CQRS pattern
 export class DenoViewStateRepository implements
   IViewStateRepository<
     Event,
@@ -162,6 +169,8 @@ export class DenoViewStateRepository implements
 
   // Save the state
   // key schema: ["view", "streamId"]
+  // Mind that here we have the view state that is a combination of RestaurantView and OrderView / a product of all views
+  // Some alternative key shcemas could be ["restaurantView", "streamId"] and ["orderView", "streamId"], or you could add secondary indexes for querying
   async save(
     state: ViewState,
     em: EventMetadata,
@@ -175,7 +184,6 @@ export class DenoViewStateRepository implements
       );
     }
     const key = [VIEW_KEY_PREFIX, streamIdFromEvent];
-    // const key = [VIEW_KEY_PREFIX, state.orderId ?? state.restaurantId]; // better way to do this?
     const atomicOperation = this.kv.atomic();
     if (version) {
       atomicOperation.check({
