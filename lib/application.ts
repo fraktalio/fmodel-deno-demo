@@ -1,4 +1,7 @@
-import type { EventSourcingAggregate, MaterializedView } from "fmodel";
+import type {
+  EventSourcingOrchestratingAggregate,
+  MaterializedView,
+} from "fmodel";
 import type { Order, Restaurant, RestaurantView } from "./domain.ts";
 import type { StreamVersion } from "./infrastructure.ts";
 import type { CommandMetadata } from "./infrastructure.ts";
@@ -15,7 +18,7 @@ import type { Command, Event } from "./api.ts";
  * @param commandMetadata of type CommandMetadata
  * @param eventMetadata of type EventMetadata
  */
-export type ApplicationAggregate = EventSourcingAggregate<
+export type ApplicationAggregate = EventSourcingOrchestratingAggregate<
   Command,
   (Restaurant & Order) | null,
   Event,

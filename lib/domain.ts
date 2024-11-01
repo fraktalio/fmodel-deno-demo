@@ -1,4 +1,4 @@
-import { Decider, View } from "fmodel";
+import { Decider, Saga, View } from "fmodel";
 import type {
   MenuItem,
   OrderCommand,
@@ -377,4 +377,69 @@ export const orderView: View<OrderView | null, OrderEvent> = new View<
     }
   },
   null,
+);
+
+// ####################### Restaurant Saga / Choreography ##############################
+
+/**
+ * Saga is a datatype that represents the central point of control deciding what to execute next.
+ * It is responsible for mapping different events from aggregates into action results (AR) that the Saga then can use to calculate the next actions (A) to be mapped to command of other aggregates.
+ *
+ * @param e Events we react on / Action Result
+ * @param c Commans we dispatch based on the events / Action
+ */
+export const restaurantSaga: Saga<OrderEvent, RestaurantCommand> = new Saga(
+  (event) => {
+    switch (event.kind) {
+      case "OrderPreparedEvent":
+      case "OrderNotPreparedEvent":
+      case "OrderCreatedEvent":
+      case "OrderNotCreatedEvent":
+        return [];
+      default: {
+        // Exhaustive matching of the Action Result/Event type
+        const _: never = event;
+        return [];
+      }
+    }
+  },
+);
+
+// ####################### Order Saga / Choreography ##############################
+/**
+ * Saga is a datatype that represents the central point of control deciding what to execute next.
+ * It is responsible for mapping different events from aggregates into action results (AR) that the Saga then can use to calculate the next actions (A) to be mapped to command of other aggregates.
+ *
+ * @param e Events we react on / Action Result
+ * @param c Commans we dispatch based on the events / Action
+ */
+export const orderSaga: Saga<RestaurantEvent, OrderCommand> = new Saga<
+  RestaurantEvent,
+  OrderCommand
+>(
+  (event) => {
+    switch (event.kind) {
+      case "RestaurantOrderPlacedEvent":
+        return [
+          {
+            decider: "Order",
+            kind: "CreateOrderCommand",
+            id: event.orderId,
+            restaurantId: event.id,
+            menuItems: event.menuItems,
+          },
+        ];
+      case "RestaurantCreatedEvent":
+      case "RestaurantNotCreatedEvent":
+      case "RestaurantMenuChangedEvent":
+      case "RestaurantMenuNotChangedEvent":
+      case "RestaurantOrderNotPlacedEvent":
+        return [];
+      default: {
+        // Exhaustive matching of the Action Result/Event type
+        const _: never = event;
+        return [];
+      }
+    }
+  },
 );

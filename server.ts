@@ -2,12 +2,19 @@ import { blue, red } from "std/fmt/colors.ts";
 import {
   type Order,
   orderDecider,
+  orderSaga,
   orderView,
   type Restaurant,
   restaurantDecider,
+  restaurantSaga,
   restaurantView,
 } from "./lib/domain.ts";
-import { type Decider, EventSourcingAggregate, MaterializedView } from "fmodel";
+import {
+  type Decider,
+  EventSourcingOrchestratingAggregate,
+  MaterializedView,
+  Saga,
+} from "fmodel";
 import {
   type CommandMetadata,
   DenoEventRepository,
@@ -65,13 +72,17 @@ Deno.serve(async (request: Request) => {
     // Combine deciders to create a new decider that can handle both restaurant and order commands
     const decider: Decider<Command, (Order & Restaurant) | null, Event> =
       restaurantDecider.combine(orderDecider);
+    // Combine choreography sagas to create a single orchestrating saga
+    const saga: Saga<Event, Command> = restaurantSaga.combine(orderSaga);
     // Create a repository for the events / a Deno implementation of the IEventRepository and optionally enable event enqueueing
     const eventRepository = new DenoEventRepository(kv, true);
     // Create an aggregate to handle the commands of all types / Aggregate is composed of a decider and an event repository
-    const aggregate: ApplicationAggregate = new EventSourcingAggregate(
-      decider,
-      eventRepository,
-    );
+    const aggregate: ApplicationAggregate =
+      new EventSourcingOrchestratingAggregate(
+        decider,
+        eventRepository,
+        saga,
+      );
     // Handle the commands of all types
     const result = await aggregate.handle(command);
     console.log(blue("Result of command handling: "), result);
